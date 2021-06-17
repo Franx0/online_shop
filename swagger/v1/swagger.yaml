@@ -1,0 +1,122 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+  contact:
+    name: API Support
+    email: francisco.moya.martinez@gmail.com
+schemes:
+- http
+- https
+paths:
+  "/api/merchants/disbursements":
+    get:
+      summary: List disbursements
+      tags:
+      - Merchants
+      parameters:
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Disbursements list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      '1':
+                        type: object
+                        properties:
+                          '2018-01-22':
+                            type: string
+                            example: '4679.25'
+                          '2020-10-01':
+                            type: string
+                            example: '30.25'
+                          '2021-02-01':
+                            type: string
+                            example: '3445.02'
+                      '2':
+                        type: object
+                        properties:
+                          '2015-03-02':
+                            type: string
+                            example: '45.25'
+                          '2018-10-02':
+                            type: string
+                            example: '67.25'
+                      '3':
+                        type: object
+                        properties:
+                          '2021-01-01':
+                            type: string
+                            example: '0.00'
+  "/api/merchants/{id}/disbursements":
+    get:
+      summary: Find merchant disbursements
+      tags:
+      - Merchants
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Disbursements list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      '1':
+                        type: object
+                        properties:
+                          '2018-01-22':
+                            type: string
+                            example: '4679.25'
+                          '2020-10-01':
+                            type: string
+                            example: '30.25'
+                          '2021-02-01':
+                            type: string
+                            example: '3445.02'
+components:
+  schemas:
+    NotFound:
+      type: object
+      description: Resource not found
+      atributes:
+        message: string
+    Unauthorized:
+      type: object
+      description: Unauthorized resource
+      atributes:
+        message: string
+    Forbidden:
+      type: object
+      description: Forbidden action
+      atributes:
+        message: string
+servers:
+- url: http://{defaultHost}
+  variables:
+    defaultHost:
+      default: localhost:3000
