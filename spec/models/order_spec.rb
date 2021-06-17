@@ -75,10 +75,10 @@ RSpec.describe Order, type: :model do
         order.completed_at = DateTime.now
       }
 
-      it 'should not receive method if completed_at is nil on create' do
+      it 'should receive method if completed_at is nil on create but not execute job' do
         order = build(:order)
-        expect(order).not_to receive(:calculate_disbursement)
-        order.save
+        expect(order).to receive(:calculate_disbursement)
+        expect{ order.save }.not_to have_enqueued_job(DisbursementJob)
       end
 
       it 'should receive method if completed_at is nil but previous not' do
