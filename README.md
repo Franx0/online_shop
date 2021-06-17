@@ -54,10 +54,10 @@ To check the docs you can visit the following [url](http://localhost:3000/api-do
 In order to recreate documentation you can type the following command in your terminal:  
 
 (non Dockerized)  
-> rswag:specs:swaggerize RAILS_ENV=test  
+> rake rswag:specs:swaggerize
 
 (Dockerized)  
-> docker-compose -f docker/development/docker-compose.yml run shop rails rswag:specs:swaggerize RAILS_ENV=test
+> docker-compose -f docker/development/docker-compose.yml run shop rake rswag:specs:swaggerize
 ##### Front #####
 I created the current project thinking about integrate a tiny react application with API but I finally didn't, just a time issue. I can provide a detail explanation of how to do it configuring webpack and using yarn as package manager. 
 ##### Functionality #####
