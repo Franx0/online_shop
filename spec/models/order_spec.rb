@@ -67,5 +67,35 @@ RSpec.describe Order, type: :model do
                              .to(order.calculate_fee)
       end
     end
+
+    describe 'calculate_disbursement method' do
+      let(:order) { create(:order, amount: 150) }
+
+      before {
+        order.completed_at = DateTime.now
+      }
+
+      it 'should not receive method if completed_at is nil on create' do
+        order = build(:order)
+        expect(order).not_to receive(:calculate_disbursement)
+        order.save
+      end
+
+      it 'should receive method if completed_at is nil but previous not' do
+        expect(order).to receive(:calculate_disbursement)
+        order.update(completed_at: nil)
+      end
+
+      it 'Order instance must receive calculate_disbursement method after completed_at value change from nil' do
+        expect(order).to receive(:calculate_disbursement)
+        order.save
+      end
+
+      it 'should trigger disbursement job after order completed_at value change from nil' do
+        expect{ order.save }.to have_enqueued_job(DisbursementJob)
+                            .with(order_id: order.id)
+                            .on_queue('default')
+      end
+    end
   end
 end

@@ -8,6 +8,7 @@ class Order < ApplicationRecord
 
   # Should be better to create a custom event to listening for order changes
   before_create :set_disbursement, :set_fee
+  after_update :calculate_disbursement
 
   scope :completed, -> { where.not(completed_at: nil) }
 
@@ -29,5 +30,9 @@ class Order < ApplicationRecord
 
   def set_fee
     self.fee = calculate_fee
+  end
+
+  def calculate_disbursement
+    DisbursementJob.perform_later(order_id: id) if (will_save_change_to_completed_at? || saved_change_to_completed_at?)
   end
 end
