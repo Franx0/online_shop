@@ -15,8 +15,6 @@ gem 'sass-rails', '>= 6'
 gem 'webpacker', '~> 4.0'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
 # Use Active Model has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -61,3 +59,7 @@ gem 'rswag-api'
 gem 'rswag-ui'
 # Adds serializers
 gem 'active_model_serializers'
+# Adds group date lib
+gem 'groupdate'
+# Adds redis database adapter
+gem 'redis-rails'
