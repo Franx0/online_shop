@@ -1,22 +1,6 @@
 require 'swagger_helper'
 require './spec/shared_context/integration'
 
-default_props = {
-  attributes: {
-    type: :object,
-    properties: {
-      type: :object,
-      '1': {
-        type: :object,
-        properties: {
-          type: :object,
-          '2018-01-22': {type: :string, example: '4679.25'}
-        }
-      }
-    }
-  }
-}
-
 # INDEX
 describe 'Merchants API', type: :request, swagger_doc: 'v1/swagger.yaml' do
   path '/api/merchants/disbursements' do
