@@ -8,7 +8,7 @@ class Order < ApplicationRecord
 
   # Should be better to create a custom event to listening for order changes
   before_create :set_disbursement, :set_fee
-  after_update :calculate_disbursement
+  after_save :calculate_disbursement
 
   scope :completed, -> { where.not(completed_at: nil) }
 
@@ -17,9 +17,9 @@ class Order < ApplicationRecord
   end
 
   def calculate_fee
-    return amount.percent_of(1) if amount < 50
-    return amount.percent_of(0.95) if (51..300).include?(amount)
-    return amount.percent_of(0.85) if amount > 300
+    return amount.percent_of(1) if amount.to_f < 50
+    return amount.percent_of(0.95) if (50...300).cover?(amount.to_f)
+    return amount.percent_of(0.85) if amount.to_f > 300
   end
 
   private
