@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - "5433"
+    volumes:
+      - shop_db_test:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    restart: always
+  redis:
+    image: 'redis:3.2-alpine'
+    volumes:
+      - shop_redis_test:/data
+  shop:
+    build:
+      context: ./../../
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: test
+    ports:
+      - "3000:3000"
+    entrypoint: ["/docker-entrypoint.sh"]
+    command: bundle exec rspec spec/*
+    volumes:
+      - ./../../:/opt/shop
+      - shop_rvm_gems_test:/vendor/bundle
+      - shop_node_modules_test:/opt/shop/node_modules
+      - ./../../public/data_examples/:/opt/shop/public/data_examples/
+    environment:
+      - BOOTSNAP_DISABLED=true
+      - WEBPACKER_DEV_SERVER_HOST=webpacker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - NODE_ENV=test
+      - RAILS_ENV=test
+    depends_on:
+      - postgres
+      - webpacker
+      - redis
+    links:
+      - postgres
+      - redis
+  webpacker:
+    build:
+      context: ./../../
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: development
+    command: bash -c "rm -rf public/packs/* || true && rm -rf tmp/cache/* && bin/webpack-dev-server"
+    ports:
+      - '3035:3035'
+    volumes:
+      - ./../../:/opt/shop
+      - shop_node_modules_test:/opt/shop/node_modules
+    environment:
+      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
+      - BOOTSNAP_DISABLED=true
+volumes:
+  shop_db_test:
+  shop_rvm_gems_test:
+  shop_node_modules_test:
+  shop_redis_test:

@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - "5433"
+    volumes:
+      - shop_db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    restart: always
+  redis:
+    image: 'redis:3.2-alpine'
+    volumes:
+      - shop_redis:/data
+  shop:
+    build:
+      context: ./../../
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: development
+    ports:
+      - "3000:3000"
+    entrypoint: ["/docker-entrypoint.sh"]
+    command: bundle exec rails s -b 0.0.0.0 -p 3000
+    volumes:
+      - ./../../:/opt/shop
+      - shop_rvm_gems:/vendor/bundle
+      - shop_node_modules:/opt/shop/node_modules
+      - $SSH_AUTH_SOCK:$SSH_AUTH_SOCK
+      - ./../../public/data_examples/:/opt/shop/public/data_examples/
+    environment:
+      - BOOTSNAP_DISABLED=true
+      - WEBPACKER_DEV_SERVER_HOST=webpacker
+      - SSH_AUTH_SOCK
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - NODE_ENV=development
+      - RAILS_ENV=development
+    depends_on:
+      - postgres
+      - webpacker
+      - redis
+    links:
+      - postgres
+      - redis
+    stdin_open: true
+    tty: true
+    restart: always
+  webpacker:
+    build:
+      context: ./../../
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: development
+    command: bash -c "rm -rf public/packs/* || true && rm -rf tmp/cache/* && bin/webpack-dev-server"
+    ports:
+      - '3035:3035'
+    volumes:
+      - ./../../:/opt/shop
+      - shop_node_modules:/opt/shop/node_modules
+    environment:
+      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
+      - BOOTSNAP_DISABLED=true
+volumes:
+  shop_db:
+  shop_rvm_gems:
+  shop_node_modules:
+  shop_redis:
